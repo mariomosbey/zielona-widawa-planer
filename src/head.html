@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zielona Widawa – planer wnętrz 3D</title>
+<style>
+:root{--g:#1d4d36;--g2:#2f7a54;--bg:#f4f6f3;--panel:#ffffff;--line:#e1e6e0;--txt:#1b2a22;--mut:#6b7a70;--red:#dc2626;--amb:#d97706}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--txt);background:var(--bg);overflow:hidden}
+#app{display:grid;grid-template-columns:350px 1fr;height:100%}
+body.sideoff #app{grid-template-columns:1fr}body.sideoff #side{display:none}
+#side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+#side header{padding:12px 16px 10px;background:var(--g);color:#fff}
+#side h1{font-size:17px;margin:0}#side header p{margin:2px 0 0;font-size:12px;opacity:.85}
+.modeswitch{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 12px;background:#eef2ee;border-bottom:1px solid var(--line)}
+.modeswitch button{padding:10px 6px;font-size:15px;font-weight:600;border-radius:10px}
+.panel{display:none;overflow:auto;padding:14px 16px 40px;min-height:0;flex:1}#panel-layout{display:block}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);margin:18px 0 8px}h3:first-child{margin-top:0}
+button,.btn{font:inherit;font-size:14px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 11px;cursor:pointer;color:var(--txt);text-decoration:none;display:inline-block}
+button:hover,.btn:hover{border-color:var(--g2);background:#f1f8f4}button.on{background:var(--g);color:#fff;border-color:var(--g)}
+button.primary{background:var(--g);color:#fff;border-color:var(--g);font-weight:600}button.primary:hover{background:var(--g2)}
+button.danger{color:var(--red)}button.danger:hover{background:#fef2f2;border-color:var(--red)}button:disabled{opacity:.4;cursor:default}
+input[type=number],input[type=text],input[type=search],select{font:inherit;font-size:14px;width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input[type=color]{width:34px;height:32px;padding:0;border:1px solid var(--line);border-radius:6px;background:#fff}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}.grid3 label{font-size:11.5px;color:var(--mut);display:block}
+.muted{color:var(--mut)}.small{font-size:12.5px}
+kbd{background:#eef2ee;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;font-size:12px}
+details{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:#fafcfa}
+details>summary{padding:10px 12px;cursor:pointer;font-weight:600;list-style:none}details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"▾";float:right;color:var(--mut)}details[open]>summary::after{content:"▴"}
+details>.in{padding:2px 12px 12px}
+details.big{border-color:var(--g2);background:#f3faf5}details.big>summary{color:var(--g);font-size:15px}
+.presets{display:flex;gap:6px}.presets button{flex:1}
+#presetdesc{font-size:12.5px;color:var(--mut);margin:6px 0 0}
+#inspector{background:#f3f9ff;border:1px solid #c9e3f7;border-radius:10px;padding:12px}
+#inspector.empty{background:#f7faf7;border-color:var(--line)}
+.insp-title{font-weight:600;margin-bottom:8px}
+.btnrow{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{font-size:10.5px;border-radius:9px;padding:0 6px;border:1px solid}.chip.warn{color:var(--amb);border-color:var(--amb)}.chip.ok{color:var(--g2);border-color:var(--g2)}
+#checklist .lvhead{font-size:11.5px;text-transform:uppercase;color:var(--mut);letter-spacing:.7px;margin:10px 0 3px}
+.row{display:flex;align-items:center;gap:8px;padding:6px 6px;border-radius:7px;cursor:pointer}.row:hover{background:#f1f5f1}.row.sel{background:#e3f1ff;outline:1px solid #7cc4f3}
+.row input{width:auto;margin:0}.row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .dim{font-size:11.5px;color:var(--mut);white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}.dot.ok{background:#22c55e}.dot.amb{background:var(--amb)}.dot.red{background:var(--red)}
+.card{border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin:8px 0;background:#fff}
+.card .ct{font-weight:600;font-size:14px}.card .cs{font-size:12.5px;color:var(--mut);margin:2px 0}.card .cn{font-size:12px;color:var(--mut);margin-bottom:3px}
+.card .ca{display:flex;gap:10px;align-items:center;margin-top:6px}.card .ca a{font-size:12.5px;color:var(--g2)}
+.bd{font-size:10px;font-weight:700;color:#fff;border-radius:4px;padding:1px 5px;background:#64748b}.bd.IKEA{background:#0058a3}.bd.VOX{background:#b45309}.bd.Agata{background:#be185d}.bd.Własne{background:#475569}
+.filters{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.filters button{padding:4px 10px;font-size:13px;border-radius:14px}
+.door{padding:9px 0;border-bottom:1px solid var(--line)}.door .dn{font-size:14px;margin-bottom:5px}
+.seg{display:flex}.seg button{flex:1;border-radius:0;padding:6px 2px;font-size:13px}.seg button:first-child{border-radius:8px 0 0 8px}.seg button:last-child{border-radius:0 8px 8px 0}
+.opt{display:flex;gap:9px;align-items:center;padding:6px 0;cursor:pointer}.opt input{width:auto}
+#view{position:relative;min-width:0;min-height:0}#view canvas{display:block;width:100%;height:100%}
+#toolbar{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;pointer-events:none;z-index:5}
+#toolbar>*{pointer-events:auto}#toolbar .sp{flex:1;pointer-events:none}
+.group{display:flex;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.group button{border:0;border-radius:0;background:transparent;padding:8px 13px}.group button.on{background:var(--g);color:#fff}.group button+button{border-left:1px solid var(--line)}
+.group label{display:flex;align-items:center;gap:6px;padding:0 12px;font-size:14px;cursor:pointer;white-space:nowrap;height:36px}.group label input{width:auto}
+#btn-share.share{background:var(--g);color:#fff;font-weight:600;padding:8px 14px}
+#menuwrap{position:relative}
+#menu{display:none;position:absolute;right:0;top:44px;min-width:260px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.16);padding:6px;z-index:10}
+#menu.open{display:block}#menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:9px 12px;border-radius:8px}#menu button:hover{background:#eef5ef}
+#menu hr{border:0;border-top:1px solid var(--line);margin:5px 0}
+#hud{position:absolute;left:10px;bottom:10px;max-width:400px;background:rgba(255,255,255,.96);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.1);z-index:5}
+#hud .dist{display:grid;grid-template-columns:1fr 1fr;gap:3px 14px;margin-top:6px}
+.tag{display:inline-block;color:#fff;border-radius:5px;padding:1px 7px;font-size:12px;margin:2px 3px 0 0}.tag.ok{background:#16a34a}
+#walkhint{display:none;position:absolute;right:12px;bottom:12px;background:rgba(20,40,30,.88);color:#fff;border-radius:9px;padding:8px 12px;font-size:13px;z-index:5}
+#toast{position:absolute;top:62px;left:50%;transform:translateX(-50%);background:var(--g);color:#fff;border-radius:8px;padding:7px 16px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:30;max-width:90%;text-align:center}
+#welcome{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,92%);background:#fff;border-radius:16px;box-shadow:0 12px 50px rgba(0,0,0,.28);padding:22px 24px;z-index:25;display:none}
+#welcome h2{margin:0 0 8px;font-size:20px;color:var(--g)}#welcome li{margin:7px 0}#welcome ul{padding-left:20px;margin:8px 0 14px}
+dialog{border:0;border-radius:16px;padding:0;width:min(620px,94vw);max-height:88vh;box-shadow:0 12px 50px rgba(0,0,0,.3)}dialog::backdrop{background:rgba(0,0,0,.35)}
+dialog .dh{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff}
+dialog .dh b{font-size:17px}dialog .db{padding:6px 18px 20px;overflow:auto;max-height:calc(88vh - 60px)}
+table.areas{border-collapse:collapse;width:100%;font-size:13.5px}table.areas td{padding:3px 4px;border-bottom:1px solid var(--line)}table.areas td:last-child{text-align:right;white-space:nowrap}table.areas tr.sum td{font-weight:700;border-top:2px solid var(--g)}
+.desc p{margin:6px 0}.desc ul{margin:4px 0 8px 18px;padding:0}.desc li{margin:2px 0}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:6px}.tools button{text-align:left;padding:10px 10px}
+.sw{display:flex;flex-wrap:wrap;gap:6px}.sw button{width:32px;height:32px;padding:0;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}.sw button.on{box-shadow:0 0 0 3px var(--g)}
+.sw.big{display:grid;grid-template-columns:1fr 1fr;gap:6px}.sw.big button{width:auto;height:36px;border-radius:8px;text-align:left;padding:0 8px;border:1px solid var(--line);box-shadow:none}.sw.big button span{background:rgba(255,255,255,.85);border-radius:5px;padding:1px 5px;font-size:12px}.sw.big button.on{outline:3px solid var(--g)}
+.sw.big button.reset{background:repeating-linear-gradient(45deg,#fff,#fff 6px,#eee 6px,#eee 12px)}
+#btn-side{padding:8px 12px}
+@media(max-width:820px){#app{grid-template-columns:1fr}#side{position:absolute;z-index:20;width:92%;max-width:380px;height:100%;box-shadow:0 0 30px rgba(0,0,0,.3)}body.sideoff #side{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+<aside id="side">
+  <header><h1>Zielona Widawa</h1><p>Planer wnętrz 3D · dom szeregowy, Wrocław · 94,69 m²</p></header>
+  <div class="modeswitch"><button data-edit="buy" class="on" title="Ustawiaj meble">🛋 Meble</button><button data-edit="build" title="Ściany, drzwi, okna, podłogi">🔨 Budowa</button></div>
+
+  <section class="panel" id="panel-layout">
+    <details class="big" id="cat-details">
+      <summary>➕ Dodaj mebel z katalogu</summary>
+      <div class="in">
+        <input id="cat-q" type="search" placeholder="Szukaj: sofa, KIVIK, szafa…">
+        <div class="filters" id="cat-brands"></div>
+        <select id="cat-type" aria-label="Rodzaj mebla"></select>
+        <p class="muted small" style="margin:8px 0 2px"><span id="cat-count"></span> · ✓ wymiar z katalogu, ~ orientacyjny (po dodaniu możesz go poprawić)</p>
+        <div id="cat-list"></div>
+      </div>
+    </details>
+
+    <h3>Zaznaczony mebel</h3>
+    <div id="inspector" class="empty"></div>
+
+    <h3>Meble na planie</h3>
+    <div id="checklist"></div>
+
+    <details><summary>Gotowe układy mebli</summary><div class="in">
+      <div class="presets"><button data-preset="1" class="on">Układ 1</button><button data-preset="2">Układ 2</button><button data-preset="3">Układ 3</button></div>
+      <p id="presetdesc"></p>
+    </div></details>
+    <details><summary>Własny klocek (dowolny rozmiar)</summary><div class="in">
+      <form id="custom-form">
+        <input id="cb-name" type="text" placeholder="Nazwa, np. mały stół" style="margin-bottom:6px">
+        <div class="grid3"><label>Szer. cm<input id="cb-w" type="number" value="100" min="5"></label><label>Głęb. cm<input id="cb-d" type="number" value="60" min="5"></label><label>Wys. cm<input id="cb-h" type="number" value="75" min="2"></label></div>
+        <div class="btnrow"><input id="cb-c" type="color" value="#b8c7d9"><button type="submit" class="primary">Dodaj klocek</button></div>
+      </form>
+    </div></details>
+  </section>
+
+  <section class="panel" id="panel-build"><div id="build-ui"></div></section>
+</aside>
+
+<main id="view">
+  <div id="toolbar">
+    <button id="btn-side" title="Pokaż / ukryj panel boczny">☰</button>
+    <div class="group"><button data-mode="orbit" class="on">3D</button><button data-mode="top">Z góry</button><button data-mode="walk">Spacer</button></div>
+    <div class="group"><button data-level="ground" class="on">Parter</button><button data-level="upper">Piętro</button><button data-level="attic">Poddasze</button></div>
+    <div class="group"><label title="Linie wymiarowe jak na rzucie architektonicznym"><input type="checkbox" data-opt="dims"> Wymiary</label></div>
+    <div class="sp"></div>
+    <div id="menuwrap">
+      <div class="group"><button id="btn-menu">⋯ Więcej</button></div>
+      <div id="menu">
+        <button data-dlg="dlg-house">🏠 Opis domu</button>
+        <button data-dlg="dlg-doors">🚪 Drzwi – otwórz / zamknij</button>
+        <button data-dlg="dlg-view">⚙ Ustawienia widoku</button>
+        <button id="btn-all">🏢 Pokaż wszystkie piętra naraz</button>
+        <hr>
+        <button id="btn-export">💾 Zapisz układ do pliku</button>
+        <button id="btn-import">📂 Wczytaj układ z pliku</button>
+        <button id="btn-shot">🖼 Zrzut ekranu (PNG)</button>
+        <button id="btn-reset" class="danger">↺ Resetuj meble do układu 1</button>
+        <hr>
+        <button data-dlg="dlg-help">❓ Pomoc i skróty</button>
+      </div>
+    </div>
+    <button id="btn-share" class="share" title="Kopiuje link z całym Twoim układem – wyślij go komuś, kto ma go zobaczyć i edytować">🔗 Udostępnij link</button>
+  </div>
+  <div id="hud"></div>
+  <div id="walkhint"><b>Spacer:</b> W A S D – chód · przeciągnij myszą – rozglądanie · Shift – szybciej · piętro zmieniasz przyciskami u góry</div>
+  <div id="toast"></div>
+  <div id="welcome">
+    <h2>Witaj w planerze wnętrz 👋</h2>
+    <ul>
+      <li><b>🛋 Meble</b> – dodaj mebel z katalogu i przeciągnij go myszą po podłodze. <kbd>R</kbd> obraca.</li>
+      <li><b>🔨 Budowa</b> – rysuj i przesuwaj ściany, wstawiaj drzwi i okna, maluj podłogi i ściany.</li>
+      <li><b>🔗 Udostępnij link</b> – kopiuje link z całym Twoim planem. Wyślij go komuś – otworzy go i będzie mógł wszystko edytować.</li>
+    </ul>
+    <button class="primary" id="welcome-ok">Zaczynamy</button>
+  </div>
+  <input type="file" id="file-import" accept="application/json" hidden>
+</main>
+</div>
+
+<dialog id="dlg-doors"><div class="dh"><b>🚪 Drzwi</b><button data-close>✕</button></div><div class="db">
+  <p class="muted small">Zasięg otwierania drzwi to strefa kolizji (meble w zasięgu świecą na bursztynowo), dopóki drzwi nie ustawisz na „Brak”.</p>
+  <div id="doorlist"></div></div></dialog>
+
+<dialog id="dlg-view"><div class="dh"><b>⚙ Ustawienia widoku</b><button data-close>✕</button></div><div class="db">
+  <h3>Widok</h3>
+  <label class="opt"><input type="checkbox" data-opt="cut"> Przekrój – ściany do 1,10 m (odznacz = pełna wysokość)</label>
+  <label class="opt"><input type="checkbox" data-opt="dims"> Wymiary architektoniczne (cm)</label>
+  <label class="opt"><input type="checkbox" data-opt="labels"> Nazwy i powierzchnie pomieszczeń</label>
+  <label class="opt"><input type="checkbox" data-opt="arcs"> Łuki otwierania drzwi</label>
+  <label class="opt"><input type="checkbox" data-opt="showX"> Zabudowy / szachty z symbolem „X” z rzutu</label>
+  <label class="opt"><input type="checkbox" data-opt="roof"> Dach nieprzezroczysty (zamyka widok z góry; tylko bez przekroju)</label>
+  <h3>Przeciąganie mebli</h3>
+  <label class="opt"><input type="checkbox" data-opt="snapGrid"> Siatka 5 cm</label>
+  <label class="opt"><input type="checkbox" data-opt="snapWall"> Przyciąganie do ścian (do 8 cm)</label>
+</div></dialog>
+
+<dialog id="dlg-help"><div class="dh"><b>❓ Pomoc i skróty</b><button data-close>✕</button></div><div class="db desc">
+  <h3>Jak to działa</h3>
+  <ul><li><b>Meble:</b> „Dodaj mebel z katalogu” → mebel pojawia się na planie → przeciągnij go. Czerwony = koliduje ze ścianą/innym meblem, bursztynowy = w zasięgu drzwi lub wyższy niż skos dachu.</li>
+  <li><b>Budowa:</b> wybierz narzędzie i klikaj / przeciągaj po rzucie. Prawy przycisk myszy = obrót kamery, kółko = zoom.</li>
+  <li><b>Piętra:</b> przyciski Parter / Piętro / Poddasze u góry. „Pokaż wszystkie piętra” w menu ⋯.</li>
+  <li><b>Udostępnianie:</b> „🔗 Udostępnij link” kopiuje adres z całym planem. Ktoś, kto go otworzy, widzi Twój plan i może go dowolnie zmieniać, a potem odesłać własny link.</li></ul>
+  <h3>Skróty</h3>
+  <p><kbd>R</kbd> obrót 90° (<kbd>Shift+R</kbd> −90°) · <kbd>E</kbd>/<kbd>Q</kbd> ±15° · strzałki – przesuń o 5 cm (<kbd>Shift</kbd> 1 cm) · <kbd>Del</kbd> ukryj mebel · <kbd>Esc</kbd> odznacz.<br>
+  Budowa: <kbd>W</kbd> ściana · <kbd>V</kbd> przesuń · <kbd>D</kbd> drzwi · <kbd>O</kbd> okno · <kbd>X</kbd> usuń · <kbd>C</kbd> kolor · <kbd>F</kbd> podłoga · <kbd>Ctrl+Z</kbd> cofnij.<br>
+  Spacer: <kbd>W A S D</kbd> + przeciąganie myszą.</p>
+</div></dialog>
+
+<dialog id="dlg-house"><div class="dh"><b>🏠 Opis domu</b><button data-close>✕</button></div><div class="db desc">
+    <h3>Opis domu</h3>
+    <p><b>Dom jednorodzinny w zabudowie szeregowej</b> we Wrocławiu (Osiedle Zielona Widawa). Trzy poziomy: <b>parter</b> (strefa dzienna), <b>piętro</b> (strefa nocna, skosy mansardowe) i <b>poddasze / strych</b> pod dachem dwuspadowym (prostokątna podłoga, trójkątne szczyty, schody z piętra). Powierzchnia użytkowa projektowana <b>94,69 m²</b>, wg pomiaru powykonawczego <b>96,06 m²</b>.</p>
+    <p>Segment wewnętrzny między ścianami szczytowymi (granica z sąsiadami): światło <b>ok. 5,79 × 9,72 m</b>. Okna tylko od frontu (południe/wejście) i od tyłu (ogród) – ściany boczne pełne. Wejście od frontu przez podest ok. 2,3 × 1,0 m.</p>
+    <h3>Parter</h3>
+    <table class="areas">
+      <tr><td>1.01 Przedsionek (180×237)</td><td>4,25 m²</td></tr>
+      <tr><td>1.02 Salon z aneksem kuchennym</td><td>43,48 m²</td></tr>
+      <tr><td>1.03 Toaleta (186×120)</td><td>2,22 m²</td></tr>
+      <tr><td>1.04 Pom. gospodarcze (155×237)</td><td>3,70 m²</td></tr>
+    </table>
+    <ul>
+      <li><b>Salon + jadalnia + kuchnia</b> – jedna otwarta przestrzeń o szer. 5,79 m i głębokości ok. 9,7 m od tarasu do frontu. Część dzienna (ok. 5,8 × 6,1 m) z dwuskrzydłowymi drzwiami tarasowymi (1,8 m) oraz drzwiami ogrodowymi (ok. 0,96 m) od strony ogrodu; strefa jadalni przy schodach; kuchnia w układzie L (szer. 2,19 m, lewa ściana + front, okno 1,2 m).</li>
+      <li><b>Schody</b> dwubiegowe z zabiegami (ok. 2,4 × 2,0 m) po prawej stronie, w głębi salonu.</li>
+      <li><b>Przedsionek</b> (wejście środkowe, drzwi ok. 0,88 m) z szachtą/szafą techniczną; <b>toaleta</b> (drzwi 0,8 m do salonu) i <b>pomieszczenie gospodarcze</b> (pralka, suszarka – oznaczone na rzucie) z oknem.</li>
+    </ul>
+    <h3>Piętro</h3>
+    <table class="areas">
+      <tr><td>2.01 Korytarz (ok. 100 × 319)</td><td>3,69 m²</td></tr>
+      <tr><td>2.02 Pokój 1 – główna sypialnia (395 × 373)</td><td>11,66 m²</td></tr>
+      <tr><td>2.03 Łazienka (211 × 257)</td><td>5,00 m²</td></tr>
+      <tr><td>2.04 Pokój 2 (285 × 372)</td><td>9,05 m²</td></tr>
+      <tr><td>2.05 Pokój 3 (279 × 372)</td><td>7,64 m²</td></tr>
+      <tr><td>2.06 Garderoba (173 × 312)</td><td>4,00 m²</td></tr>
+      <tr class="sum"><td>Razem (parter + piętro)</td><td>94,69 m²</td></tr>
+    </table>
+    <ul>
+      <li><b>Korytarz</b> prowadzi od schodów do wszystkich pomieszczeń: Pokój 2 (lewo), Pokój 3 (prawo), łazienka, oraz na końcu do Pokoju 1.</li>
+      <li><b>Pokój 1</b> – największy, z oknem połaciowym i oknem we froncie; dostęp do garderoby (2.06, drzwi 0,82 m). Na rzucie wrysowane łóżko 160×200 wezgłowiem do prawej ściany.</li>
+      <li><b>Pokoje 2 i 3</b> – mniejsze, symetryczne, od strony ogrodu (okna połaciowe); w rzucie sugerowane łóżko + biurko.</li>
+      <li><b>Łazienka</b> – wanna narożna, umywalka, WC; <b>garderoba</b> bez okna w ścianie (okno połaciowe).</li>
+    </ul>
+    <h3>Poddasze (strych)</h3>
+    <p class="small">Dodane na podstawie opisu (bez rzutu): prostokątna podłoga ok. 5,79 × 6,9 m (≈ 40 m²) nad piętrem, dostępna schodami z klatki schodowej piętra (to samo pudło co schody z parteru, odbite), otwór w podłodze przy schodach. Dach dwuspadowy o spadku ok. 42°, kalenica wzdłuż osi X (trójkątne szczyty od strony sąsiadów), ścianka kolankowa 0,4 m, wysokość w kalenicy ok. 3,5 m. To model orientacyjny – wymiary strychu zweryfikuj z projektem. Meble wyższe niż dach w danym miejscu są oznaczane na bursztynowo.</p>
+    <h3>Skosy i wysokości (założenia)</h3>
+    <p class="small">Na rzucie piętra pasy przy ścianie frontowej i tylnej oznaczono <b>h=120</b> i <b>h=190</b> (hasz = skos dachu). W modelu przyjąłem profil sufitu: <b>1,0 m</b> przy ścianie → <b>1,9 m</b> w odległości 0,7 m → <b>2,55 m</b> od 1,4 m w głąb pomieszczenia. Wysokość parteru w świetle 2,60 m, strop 25 cm. Meble wyższe niż skos w danym miejscu są oznaczane na bursztynowo („wyższy niż skos”). Symbole „X” z rzutu (szachty/zabudowy) traktuję jako pełne bryły wys. ok. 2,0 m – można je ukryć w zakładce Widok.</p>
+    <p class="small">Źródło: załączone rzuty 1:100 (parter, piętro). Wymiary zebrane z opisów na rzucie; położenie okien/drzwi odczytane z rysunku – to <b>model orientacyjny</b>, zweryfikuj z projektem wykonawczym i pomiarem na budowie.</p>
+  </div></dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+/*__JS__*/
+</script>
+</body>
+</html>
